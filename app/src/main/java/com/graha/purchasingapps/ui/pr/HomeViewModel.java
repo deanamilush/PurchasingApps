@@ -1,4 +1,4 @@
-package com.graha.purchasingapps.ui.home;
+package com.graha.purchasingapps.ui.pr;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

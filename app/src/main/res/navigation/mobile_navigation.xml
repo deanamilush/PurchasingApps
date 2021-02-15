@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_pr"
-        android:name="com.graha.purchasingapps.ui.home.HomeFragment"
+        android:name="com.graha.purchasingapps.ui.pr.PrFragment"
         android:label="@string/title_pr"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_pr" />
 
     <fragment
         android:id="@+id/navigation_po"
-        android:name="com.graha.purchasingapps.ui.dashboard.DashboardFragment"
+        android:name="com.graha.purchasingapps.ui.dashboard.PoFragment"
         android:label="@string/title_po"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_po" />
 </navigation>
