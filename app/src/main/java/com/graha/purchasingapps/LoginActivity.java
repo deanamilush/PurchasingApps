@@ -3,6 +3,7 @@ package com.graha.purchasingapps;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -175,7 +176,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         });
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
-                //Toast.makeText(LoginAct.this, msg, Toast.LENGTH_SHORT).show();
 
             }else {
                 JSONObject vjo = lresult.getJSONObject(0);
@@ -189,7 +189,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 pConfig.pSysnr = vjo.getString("sysnr");
                 pConfig.pClient = vjo.getString("client");
                 Date todayDate = Calendar.getInstance().getTime();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
                 pConfig.pLast_in = formatter.format(todayDate);
 
                 delegate.onTaskCompleted(pConfig);

@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         Gson gson = new Gson();
         String objCon = getIntent().getStringExtra("pConfig");
+        getMyData();
         pConfig = gson.fromJson(objCon, Config.class);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -82,5 +83,9 @@ public class MainActivity extends AppCompatActivity {
         TLog vTLog = new TLog(pConfig.pId, pConfig.pId_app, pConfig.pId_user, pConfig.pId_conn, pConfig.pImei, pConfig.pIp_webser,  pConfig.pLast_in);
         vRaising.deleteTLog(vTLog);
     }
-
+    public String getMyData(){
+        Gson gson = new Gson();
+        String jSonCon = gson.toJson(pConfig);
+        return  jSonCon;
+    }
 }

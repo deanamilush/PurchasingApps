@@ -39,7 +39,6 @@ public class PrAdapter extends RecyclerView.Adapter<PrAdapter.ListViewHolder> {
         holder.monthAgo.setText(String.valueOf(userPr.getMonthAgo()));
     }
 
-
     @Override
     public int getItemCount() {
         return listData.size();
