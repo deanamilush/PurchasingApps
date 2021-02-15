@@ -1,4 +1,4 @@
-package com.graha.purchasingapps;
+package com.graha.purchasingapps.ui.po;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +8,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.graha.purchasingapps.R;
+import com.graha.purchasingapps.UserDataPr;
+import com.graha.purchasingapps.ui.pr.PrAdapter;
+
 import java.util.ArrayList;
 
-public class PrAdapter extends RecyclerView.Adapter<PrAdapter.ListViewHolder> {
+public class PoAdapter extends RecyclerView.Adapter<PoAdapter.ListViewHolder> {
     final ArrayList<UserDataPr> listData;
 
-    public PrAdapter(ArrayList<UserDataPr> listData) {
+    public PoAdapter(ArrayList<UserDataPr> listData) {
         this.listData = listData;
     }
 
@@ -23,14 +27,14 @@ public class PrAdapter extends RecyclerView.Adapter<PrAdapter.ListViewHolder> {
 
     @NonNull
     @Override
-    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public PoAdapter.ListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_user, viewGroup, false);
-        return new ListViewHolder(view);
+        return new PoAdapter.ListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ListViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final PoAdapter.ListViewHolder holder, final int position) {
         final UserDataPr userPr = listData.get(position);
         holder.name.setText(userPr.getName());
 

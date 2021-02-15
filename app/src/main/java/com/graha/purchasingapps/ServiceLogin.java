@@ -2,6 +2,8 @@ package com.graha.purchasingapps;
 
 import android.os.AsyncTask;
 
+import com.graha.purchasingapps.global.Config;
+
 import java.util.HashMap;
 
 public class ServiceLogin extends AsyncTask<String, String, String> {

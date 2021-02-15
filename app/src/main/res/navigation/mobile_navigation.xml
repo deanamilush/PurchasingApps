@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_po"
-        android:name="com.graha.purchasingapps.ui.dashboard.PoFragment"
+        android:name="com.graha.purchasingapps.ui.po.PoFragment"
         android:label="@string/title_po"
         tools:layout="@layout/fragment_po" />
 </navigation>

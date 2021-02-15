@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
+import com.graha.purchasingapps.global.Config;
+import com.graha.purchasingapps.global.EventCompleted;
 
 import org.json.JSONArray;
 import org.json.JSONException;

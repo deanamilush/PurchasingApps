@@ -1,4 +1,4 @@
-package com.graha.purchasingapps;
+package com.graha.purchasingapps.global;
 
 public class Config {
     public String pGlobalPath = "/storage/emulated/0/init/";

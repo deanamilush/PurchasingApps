@@ -1,4 +1,4 @@
-package com.graha.purchasingapps;
+package com.graha.purchasingapps.global;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

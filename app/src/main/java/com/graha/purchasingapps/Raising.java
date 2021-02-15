@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.graha.purchasingapps.global.DBManager;
+
 import java.util.ArrayList;
 
 public class Raising {

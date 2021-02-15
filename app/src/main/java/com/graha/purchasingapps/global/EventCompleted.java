@@ -1,4 +1,4 @@
-package com.graha.purchasingapps;
+package com.graha.purchasingapps.global;
 
 import org.json.JSONException;
 
