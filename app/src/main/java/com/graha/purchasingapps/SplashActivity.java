@@ -69,7 +69,6 @@ public class SplashActivity extends AppCompatActivity {
                     pConfig.pAppname = vConfig.pAppname;
                     pConfig.pVer = vConfig.pVer;
                     pConfig.pDev = vConfig.pDev;
-                   // pConfig.pImei = getIMEINumber(getApplicationContext());
                     pConfig.pImei = deviceId();
                     pConfig.pIp_webser = pConfig.baseURL;
                     textView = (TextView) findViewById(R.id.textView);

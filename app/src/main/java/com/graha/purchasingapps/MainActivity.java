@@ -31,12 +31,10 @@ public class MainActivity extends AppCompatActivity {
         pConfig = gson.fromJson(objCon, Config.class);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_pr, R.id.navigation_po)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_view);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
     }
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                             // do something when the button is clicked
                             public void onClick(DialogInterface dialog, int arg1) {
                                 setLogOut();
-                                Intent gotoSplash = new Intent(MainActivity.this, LoginActivity.class);
+                                Intent gotoSplash = new Intent(MainActivity.this, SplashActivity.class);
                                 startActivity(gotoSplash);
                                 finish();
                             }

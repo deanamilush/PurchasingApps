@@ -41,7 +41,7 @@ public class PrFragment extends Fragment {
         String[] dataName = getResources().getStringArray(R.array.data_name);
         int[] dataThisMonth = getResources().getIntArray(R.array.this_month);
         int[] dataLastMonth = getResources().getIntArray(R.array.last_month);
-        int[] dataMonthAgo = getResources().getIntArray(R.array.last_month);
+        int[] dataMonthAgo = getResources().getIntArray(R.array.month_ago);
         ArrayList<UserDataPr> listUser = new ArrayList<>();
         for (int i = 0; i < dataName.length; i++) {
             UserDataPr list = new UserDataPr();

@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String JSON_STRING, type, msg;
     EditText value_username, value_password;
     Button btnLogin;
-    public Config pConfig;
+    Config pConfig;
     public  boolean pMain = false;
     ProgressDialog loading;
 
@@ -66,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (vConfig != null) {
                         pMain = true;
                         pConfig = vConfig;
+                        setTlog();
                         Gson gson = new Gson();
                         String jSonCon = gson.toJson(pConfig);
                         Intent gotoMain = new Intent(getApplicationContext(), MainActivity.class);
@@ -204,6 +206,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (loading != null) {
             loading.dismiss();
             loading = null;
+        }
+    }
+    private void setTlog(){
+        Raising vRaising = new Raising(getApplicationContext(), pConfig.pId_app, pConfig.pImei, pConfig.pGlobalPath, pConfig.pDBName);
+        TLog vTLog = new TLog(pConfig.pId, pConfig.pId_app, pConfig.pId_user, pConfig.pId_conn, pConfig.pImei, pConfig.pIp_webser,  pConfig.pLast_in);
+        vRaising.insertTLog(vTLog);
+        ArrayList<TLog> arrTLog = vRaising.getTLog();
+        if (arrTLog.size() != 0) {
+            TLog vTLog2 = arrTLog.get(0);
+            pConfig.pId = vTLog2.getId();
         }
     }
 }

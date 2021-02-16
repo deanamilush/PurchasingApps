@@ -1,7 +1,12 @@
 package com.graha.purchasingapps.global;
 
+import android.annotation.SuppressLint;
+
 public class Config {
     public String pGlobalPath = "/storage/emulated/0/init/";
+    //path for testing bluestack
+   /* @SuppressLint("SdCardPath")
+    public String pInitAppl = "/sdcard/DCIM/SharedFolder/initappl.txt";*/
     public String pInitAppl = pGlobalPath + "initappl.txt";
     public String pDBName = "dashappdb";
     public String pDBApp = "stockopdb";
