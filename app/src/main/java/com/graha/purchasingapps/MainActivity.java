@@ -3,8 +3,10 @@ package com.graha.purchasingapps;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.graha.purchasingapps.global.Config;
@@ -12,10 +14,14 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     Config pConfig;
     private final ArrayList<UserData> list = new ArrayList<>();
     RecyclerView recyclerView;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        list.addAll(getListUser());
-        showList();
+        getListPr();
+
+        /*list.addAll(getListUser());
+        showList();*/
     }
 
     private void getListPr(){
@@ -57,7 +66,45 @@ public class MainActivity extends AppCompatActivity {
         client.get(url,params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
+                String result = new String(responseBody);
+                Log.d(TAG, result);
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray jsonArray = jsonObject.getJSONArray("return");
+                    JSONObject object = jsonArray.getJSONObject(0);
+                    String typeReturn = object.getString("type");
+                    String messageReturn = object.getString("msg");
+                    if (typeReturn.equalsIgnoreCase("E")) {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+                        alertDialogBuilder.setTitle("Error");
+                        alertDialogBuilder
+                                .setMessage(messageReturn)
+                                .setIcon(R.drawable.warning)
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, arg1) -> {
+                                    dialog.cancel();
+                                    //finish();
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    } else{
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+                        alertDialogBuilder.setTitle("Error");
+                        alertDialogBuilder
+                                .setMessage(messageReturn)
+                                .setIcon(R.drawable.warning)
+                                .setCancelable(false)
+                                .setPositiveButton("OK", (dialog, arg1) -> {
+                                    dialog.cancel();
+                                    //finish();
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
 
             @Override
