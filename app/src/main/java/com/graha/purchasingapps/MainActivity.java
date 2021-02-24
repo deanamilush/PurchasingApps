@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private final ArrayList<UserData> list = new ArrayList<>();
     RecyclerView recyclerView;
     private static final String TAG = MainActivity.class.getSimpleName();
+    TextView textPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         pConfig = gson.fromJson(objCon, Config.class);
 
         recyclerView = findViewById(R.id.recyclerView);
+        textPic = findViewById(R.id.tv_item_name);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
@@ -88,18 +91,13 @@ public class MainActivity extends AppCompatActivity {
                         AlertDialog alertDialog = alertDialogBuilder.create();
                         alertDialog.show();
                     } else{
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-                        alertDialogBuilder.setTitle("Error");
-                        alertDialogBuilder
-                                .setMessage(messageReturn)
-                                .setIcon(R.drawable.warning)
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, arg1) -> {
-                                    dialog.cancel();
-                                    //finish();
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
+                        JSONArray jArray = jsonObject.getJSONArray("t_purc");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jObject = jArray.getJSONObject(i);
+                            String bednr = jObject.getString("BEDNR");
+
+                            textPic.setText(bednr);
+                        }
                     }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
