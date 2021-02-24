@@ -1,4 +1,4 @@
-package com.graha.purchasingapps;
+package com.graha.purchasingapps.global;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

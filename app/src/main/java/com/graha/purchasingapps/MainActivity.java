@@ -8,6 +8,9 @@ import android.view.MenuItem;
 
 import com.google.gson.Gson;
 import com.graha.purchasingapps.global.Config;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -15,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +43,28 @@ public class MainActivity extends AppCompatActivity {
 
         list.addAll(getListUser());
         showList();
+    }
+
+    private void getListPr(){
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "http://192.168.1.8/GlobalInc/valPrPO.php";
+        RequestParams params = new RequestParams();
+        params.put("ashost", pConfig.pAshost);
+        params.put("sysnr", pConfig.pSysnr);
+        params.put("client", pConfig.pClient);
+        params.put("usap", pConfig.pUser_sap);
+        params.put("psap", pConfig.pPass_sap);
+        client.get(url,params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
     }
 
     private void showList(){

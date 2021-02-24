@@ -1,10 +1,10 @@
 package com.graha.purchasingapps;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.graha.purchasingapps.global.Config;
 import com.graha.purchasingapps.global.EventCompleted;
+import com.graha.purchasingapps.global.RequestHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
     private String JSON_STRING, type, msg;
     public boolean pMain = false;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,24 +59,20 @@ public class SplashActivity extends AppCompatActivity {
                 pConfig.setBaseURL(text.toString());
             }
             br.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
 
         if (pConfig.baseURL != null) {
             //getJSON();
-            new GetJSON(new EventCompleted() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void onTaskCompleted(Config vConfig) throws JSONException {
-                    pConfig.pAppname = vConfig.pAppname;
-                    pConfig.pVer = vConfig.pVer;
-                    pConfig.pDev = vConfig.pDev;
-                    pConfig.pImei = deviceId();
-                    pConfig.pIp_webser = pConfig.baseURL;
-                    textView = (TextView) findViewById(R.id.textView);
-                    textView.setText(pConfig.pVer + "." + pConfig.pDev);
-                    getTlog();
-                }
+            new GetJSON((EventCompleted) vConfig -> {
+                pConfig.pAppname = vConfig.pAppname;
+                pConfig.pVer = vConfig.pVer;
+                pConfig.pDev = vConfig.pDev;
+                pConfig.pImei = deviceId();
+                pConfig.pIp_webser = pConfig.baseURL;
+                textView = (TextView) findViewById(R.id.textView);
+                textView.setText(pConfig.pVer + "." + pConfig.pDev);
+                getTlog();
             }).execute();
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);

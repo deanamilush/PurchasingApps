@@ -43,4 +43,5 @@ dependencies {
 
     implementation 'com.google.android.play:core:1.9.1'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
 }
