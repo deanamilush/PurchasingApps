@@ -11,14 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
-    final ArrayList<UserData> listData;
+    ArrayList<UserData> mData= new ArrayList<>();
 
-    public ListAdapter(ArrayList<UserData> listData) {
-        this.listData = listData;
-    }
 
-    public ArrayList<UserData> getData() {
-        return listData;
+    public void setData(ArrayList<UserData> items) {
+        mData.clear();
+        mData.addAll(items);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -31,7 +30,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final ListViewHolder holder, final int position) {
-        final UserData userPr = listData.get(position);
+        holder.bind(mData.get(position));
+
+        /*final UserData userPr = mData.get(position);
         holder.name.setText(userPr.getName());
 
         holder.prThisMonth.setText(String.valueOf(userPr.getPrThisMonth()));
@@ -39,15 +40,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         holder.prMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));
         holder.poThisMonth.setText(String.valueOf(userPr.getPoThisMonth()));
         holder.poLastMonth.setText(String.valueOf(userPr.getPoLastMonth()));
-        holder.poMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));
+        holder.poMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));*/
     }
 
     @Override
     public int getItemCount() {
-        return listData.size();
+        return mData.size();
     }
 
-    public class ListViewHolder extends RecyclerView.ViewHolder {
+    static class ListViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView name;
         private final TextView prThisMonth;
@@ -58,7 +59,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         private final TextView poMonthAgo;
 
 
-        ListViewHolder(View itemView) {
+        ListViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tv_item_name);
             prThisMonth = itemView.findViewById(R.id.pr_this_month);
@@ -68,5 +69,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             poLastMonth = itemView.findViewById(R.id.po_last_month);
             poMonthAgo = itemView.findViewById(R.id.po_month_ago);
         }
+
+        void bind(UserData userData){
+            name.setText(userData.getName());
+            prThisMonth.setText(String.valueOf(userData.getPrThisMonth()));
+            prLastMonth.setText(String.valueOf(userData.getPrLastMonth()));
+            prMonthAgo.setText(String.valueOf(userData.getPrMonthAgo()));
+        }
     }
 }
+
+

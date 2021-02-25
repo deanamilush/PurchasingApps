@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     private static final String TAG = MainActivity.class.getSimpleName();
     TextView textPic;
+    private final ListAdapter adapter = new ListAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,19 +47,24 @@ public class MainActivity extends AppCompatActivity {
         getMyData();
         pConfig = gson.fromJson(objCon, Config.class);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         textPic = findViewById(R.id.tv_item_name);
+
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        getListPr();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
-        /*list.addAll(getListUser());
-        showList();*/
+        getListPr();
     }
 
-    private void getListPr(){
+
+
+   public void getListPr(){
+       final ArrayList<UserData> listItems = new ArrayList<>();
         AsyncHttpClient client = new AsyncHttpClient();
+        UserData userData = new UserData();
         String url = "http://192.168.1.8/GlobalInc/valPrPO.php";
         RequestParams params = new RequestParams();
         params.put("ashost", pConfig.pAshost);
@@ -66,39 +72,45 @@ public class MainActivity extends AppCompatActivity {
         params.put("client", pConfig.pClient);
         params.put("usap", pConfig.pUser_sap);
         params.put("psap", pConfig.pPass_sap);
-        client.get(url,params, new AsyncHttpResponseHandler() {
+        client.post(url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                ArrayList<UserData> listData = new ArrayList<>();
                 String result = new String(responseBody);
                 Log.d(TAG, result);
                 try {
+
                     JSONObject jsonObject = new JSONObject(result);
                     JSONArray jsonArray = jsonObject.getJSONArray("return");
-                    JSONObject object = jsonArray.getJSONObject(0);
-                    String typeReturn = object.getString("type");
-                    String messageReturn = object.getString("msg");
-                    if (typeReturn.equalsIgnoreCase("E")) {
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-                        alertDialogBuilder.setTitle("Error");
-                        alertDialogBuilder
-                                .setMessage(messageReturn)
-                                .setIcon(R.drawable.warning)
-                                .setCancelable(false)
-                                .setPositiveButton("OK", (dialog, arg1) -> {
-                                    dialog.cancel();
-                                    //finish();
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
-                    } else{
-                        JSONArray jArray = jsonObject.getJSONArray("t_purc");
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jObject = jArray.getJSONObject(i);
-                            String bednr = jObject.getString("BEDNR");
-
-                            textPic.setText(bednr);
+                        JSONObject type = jsonArray.getJSONObject(0);
+                        String typeReturn = type.getString("type");
+                        String messageReturn = type.getString("msg");
+                        if (typeReturn.equalsIgnoreCase("E")) {
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+                            alertDialogBuilder.setTitle("Error");
+                            alertDialogBuilder
+                                    .setMessage(messageReturn)
+                                    .setIcon(R.drawable.warning)
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, arg1) -> {
+                                        dialog.cancel();
+                                        //finish();
+                                    });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                        }else {
+                            JSONArray tPr = jsonObject.getJSONArray("t_pr");
+                            for (int j = 0; j < tPr.length(); j++) {
+                                JSONObject user = tPr.getJSONObject(j);
+                                userData.setName(user.getString("BEDNR"));
+                                userData.setPrThisMonth(user.getInt("QCUR_MT"));
+                                userData.setPrLastMonth(user.getInt("QPREV_MT"));
+                                userData.setPrMonthAgo(user.getInt("QLAST_MT"));
+                                listItems.add(userData);
+                                adapter.setData(listItems);
+                               // adapter.notifyDataSetChanged();
+                            }
                         }
-                    }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
@@ -107,36 +119,26 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                String errorMessage;
+                switch (statusCode) {
+                    case 401:
+                        errorMessage = statusCode + " : Bad Request";
+                        break;
+                    case 403:
+                        errorMessage = statusCode + " : Forbiden";
+                        break;
+                    case 404:
+                        errorMessage = statusCode + " : Not Found";
+                        break;
+                    default:
+                        errorMessage =  statusCode + " : " + error.getMessage();
+                        break;
+                }
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showList(){
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ListAdapter cardAdapter = new ListAdapter(list);
-        recyclerView.setAdapter(cardAdapter);
-    }
-
-    public ArrayList<UserData> getListUser() {
-        String[] dataName = getResources().getStringArray(R.array.data_name);
-        int[] dataThisMonth = getResources().getIntArray(R.array.this_month);
-        int[] dataLastMonth = getResources().getIntArray(R.array.last_month);
-        int[] dataMonthAgo = getResources().getIntArray(R.array.month_ago);
-        ArrayList<UserData> listUser = new ArrayList<>();
-        for (int i = 0; i < dataName.length; i++) {
-            UserData list = new UserData();
-            list.setName(dataName[i]);
-            list.setPrThisMonth(dataThisMonth[i]);
-            list.setPrLastMonth(dataLastMonth[i]);
-            list.setPrMonthAgo(dataMonthAgo[i]);
-            list.setPoThisMonth(dataMonthAgo[i]);
-            list.setPoLastMonth(dataMonthAgo[i]);
-            list.setPoMonthAgo(dataMonthAgo[i]);
-            listUser.add(list);
-        }
-        return listUser;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -17,36 +17,4 @@
     <string name="password">Password</string>
     <string name="sign_in">Sign In</string>
     <string name="action_logout">Sign Out</string>
-
-    <string-array name="data_name">
-        <item>AYLING</item>
-        <item>INDRI</item>
-        <item>JEARICA</item>
-        <item>NADYA</item>
-        <item>TUNAI</item>
-    </string-array>
-
-    <integer-array name="this_month">
-        <item>2</item>
-        <item>1</item>
-        <item>3</item>
-        <item>3</item>
-        <item>2</item>
-    </integer-array>
-
-    <integer-array name="last_month">
-        <item>5</item>
-        <item>4</item>
-        <item>7</item>
-        <item>1</item>
-        <item>2</item>
-    </integer-array>
-
-    <integer-array name="month_ago">
-        <item>1</item>
-        <item>1</item>
-        <item>1</item>
-        <item>3</item>
-        <item>0</item>
-    </integer-array>
 </resources>
