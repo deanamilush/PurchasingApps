@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     private static final String TAG = MainActivity.class.getSimpleName();
     TextView textPic;
-    private final ListAdapter adapter = new ListAdapter();
+    private ListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +54,15 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ListAdapter(list);
         recyclerView.setAdapter(adapter);
-
         getListPr();
     }
 
 
 
    public void getListPr(){
-       final ArrayList<UserData> listItems = new ArrayList<>();
+      // final ArrayList<UserData> listItems = new ArrayList<>();
         AsyncHttpClient client = new AsyncHttpClient();
         UserData userData = new UserData();
         String url = "http://192.168.1.8/GlobalInc/valPrPO.php";
@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         client.post(url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                ArrayList<UserData> listData = new ArrayList<>();
                 String result = new String(responseBody);
                 Log.d(TAG, result);
                 try {
@@ -106,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
                                 userData.setPrThisMonth(user.getInt("QCUR_MT"));
                                 userData.setPrLastMonth(user.getInt("QPREV_MT"));
                                 userData.setPrMonthAgo(user.getInt("QLAST_MT"));
-                                listItems.add(userData);
-                                adapter.setData(listItems);
+                                list.add(userData);
+                                adapter.setData(list);
                                // adapter.notifyDataSetChanged();
                             }
                         }

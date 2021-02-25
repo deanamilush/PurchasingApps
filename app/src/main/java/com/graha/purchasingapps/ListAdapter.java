@@ -13,6 +13,9 @@ import java.util.ArrayList;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
     ArrayList<UserData> mData= new ArrayList<>();
 
+    public ListAdapter(ArrayList<UserData> list) {
+    }
+
 
     public void setData(ArrayList<UserData> items) {
         mData.clear();
