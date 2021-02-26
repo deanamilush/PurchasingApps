@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.graha.purchasingapps.global.Config;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -31,10 +34,12 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity {
 
     Config pConfig;
-    private final ArrayList<UserData> list = new ArrayList<>();
+    //private final ArrayList<UserData> list = new ArrayList<>();
+    private ArrayList<UserData> list = new ArrayList<>();
+    private String pResult;
     RecyclerView recyclerView;
+    private ProgressBar progressBar;
     private static final String TAG = MainActivity.class.getSimpleName();
-    TextView textPic;
     private ListAdapter adapter;
 
     @Override
@@ -47,21 +52,22 @@ public class MainActivity extends AppCompatActivity {
         getMyData();
         pConfig = gson.fromJson(objCon, Config.class);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        textPic = findViewById(R.id.tv_item_name);
+        recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.progressBar);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //getListPr();
         adapter = new ListAdapter(list);
         recyclerView.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
         getListPr();
     }
 
-
-
    public void getListPr(){
+       progressBar.setVisibility(View.VISIBLE);
       // final ArrayList<UserData> listItems = new ArrayList<>();
         AsyncHttpClient client = new AsyncHttpClient();
         UserData userData = new UserData();
@@ -75,12 +81,31 @@ public class MainActivity extends AppCompatActivity {
         client.post(url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                progressBar.setVisibility(View.INVISIBLE);
                 String result = new String(responseBody);
                 Log.d(TAG, result);
                 try {
+                    JSONObject responseObject = new JSONObject(result);
+                    JSONArray tablePr = responseObject.getJSONArray("t_pr");
+                    for (int i = 0; i < tablePr.length(); i++) {
+                        JSONObject user = tablePr.getJSONObject(i);
+                        userData.setName(user.getString("BEDNR"));
+                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
+                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
+                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));
 
-                    JSONObject jsonObject = new JSONObject(result);
+                        /*userData.setName(user.getString("BEDNR"));
+                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
+                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
+                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));*/
+                        list.add(userData);
+                        adapter.notifyDataSetChanged();
+                    //adapter.setData(list);
+                    }
+                    //adapter.notifyDataSetChanged();
+                   /* JSONObject jsonObject = new JSONObject(result);
                     JSONArray jsonArray = jsonObject.getJSONArray("return");
+
                         JSONObject type = jsonArray.getJSONObject(0);
                         String typeReturn = type.getString("type");
                         String messageReturn = type.getString("msg");
@@ -109,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                                 adapter.setData(list);
                                // adapter.notifyDataSetChanged();
                             }
-                        }
+                        }*/
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
@@ -118,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                progressBar.setVisibility(View.INVISIBLE);
                 String errorMessage;
                 switch (statusCode) {
                     case 401:

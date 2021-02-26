@@ -281,6 +281,7 @@ public class SplashActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             Gson gson = new Gson();
                             String jSonCon = gson.toJson(pConfig);
                             Intent gotoMain = new Intent(getApplicationContext(), MainActivity.class);

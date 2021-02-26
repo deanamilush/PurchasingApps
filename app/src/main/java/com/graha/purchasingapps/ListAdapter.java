@@ -11,17 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
-    ArrayList<UserData> mData= new ArrayList<>();
+//    ArrayList<UserData> mData= new ArrayList<>();
+
+    private  final ArrayList<UserData> mData;
 
     public ListAdapter(ArrayList<UserData> list) {
+        this.mData = list;
     }
-
 
     public void setData(ArrayList<UserData> items) {
         mData.clear();
         mData.addAll(items);
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -33,9 +36,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final ListViewHolder holder, final int position) {
-        holder.bind(mData.get(position));
+        //holder.bind(mData.get(position));
 
-        /*final UserData userPr = mData.get(position);
+        final UserData userPr = mData.get(position);
         holder.name.setText(userPr.getName());
 
         holder.prThisMonth.setText(String.valueOf(userPr.getPrThisMonth()));
@@ -43,7 +46,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         holder.prMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));
         holder.poThisMonth.setText(String.valueOf(userPr.getPoThisMonth()));
         holder.poLastMonth.setText(String.valueOf(userPr.getPoLastMonth()));
-        holder.poMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));*/
+        holder.poMonthAgo.setText(String.valueOf(userPr.getPrMonthAgo()));
     }
 
     @Override
@@ -73,12 +76,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             poMonthAgo = itemView.findViewById(R.id.po_month_ago);
         }
 
-        void bind(UserData userData){
-            name.setText(userData.getName());
-            prThisMonth.setText(String.valueOf(userData.getPrThisMonth()));
-            prLastMonth.setText(String.valueOf(userData.getPrLastMonth()));
-            prMonthAgo.setText(String.valueOf(userData.getPrMonthAgo()));
-        }
+//        void bind(UserData userData){
+//            name.setText(userData.getName());
+//            prThisMonth.setText(String.valueOf(userData.getPrThisMonth()));
+//            prLastMonth.setText(String.valueOf(userData.getPrLastMonth()));
+//            prMonthAgo.setText(String.valueOf(userData.getPrMonthAgo()));
+//        }
     }
 }
 
