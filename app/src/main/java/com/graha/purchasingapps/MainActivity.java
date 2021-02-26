@@ -8,11 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.graha.purchasingapps.global.Config;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -34,9 +32,7 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity {
 
     Config pConfig;
-    //private final ArrayList<UserData> list = new ArrayList<>();
     private ArrayList<UserData> list = new ArrayList<>();
-    private String pResult;
     RecyclerView recyclerView;
     private ProgressBar progressBar;
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -56,21 +52,18 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration
+                (recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        //getListPr();
         adapter = new ListAdapter(list);
+        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-        //adapter.notifyDataSetChanged();
         getListPr();
     }
 
    public void getListPr(){
        progressBar.setVisibility(View.VISIBLE);
-      // final ArrayList<UserData> listItems = new ArrayList<>();
         AsyncHttpClient client = new AsyncHttpClient();
-        UserData userData = new UserData();
         String url = "http://192.168.1.8/GlobalInc/valPrPO.php";
         RequestParams params = new RequestParams();
         params.put("ashost", pConfig.pAshost);
@@ -86,31 +79,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, result);
                 try {
                     JSONObject responseObject = new JSONObject(result);
+                    JSONArray jsonArray = responseObject.getJSONArray("return");
                     JSONArray tablePr = responseObject.getJSONArray("t_pr");
-                    for (int i = 0; i < tablePr.length(); i++) {
-                        JSONObject user = tablePr.getJSONObject(i);
-                        userData.setName(user.getString("BEDNR"));
-                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
-                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
-                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));
+                    JSONObject type = jsonArray.getJSONObject(0);
+                    String typeReturn = type.getString("type");
+                    String messageReturn = type.getString("msg");
 
-                        /*userData.setName(user.getString("BEDNR"));
-                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
-                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
-                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));*/
-                        list.add(userData);
-                        adapter.notifyDataSetChanged();
-                    //adapter.setData(list);
-                    }
-                    //adapter.notifyDataSetChanged();
-                   /* JSONObject jsonObject = new JSONObject(result);
-                    JSONArray jsonArray = jsonObject.getJSONArray("return");
-
-                        JSONObject type = jsonArray.getJSONObject(0);
-                        String typeReturn = type.getString("type");
-                        String messageReturn = type.getString("msg");
                         if (typeReturn.equalsIgnoreCase("E")) {
-                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+                            AlertDialog.Builder alertDialogBuilder =
+                                    new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
                             alertDialogBuilder.setTitle("Error");
                             alertDialogBuilder
                                     .setMessage(messageReturn)
@@ -122,19 +99,19 @@ public class MainActivity extends AppCompatActivity {
                                     });
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
-                        }else {
-                            JSONArray tPr = jsonObject.getJSONArray("t_pr");
-                            for (int j = 0; j < tPr.length(); j++) {
-                                JSONObject user = tPr.getJSONObject(j);
-                                userData.setName(user.getString("BEDNR"));
-                                userData.setPrThisMonth(user.getInt("QCUR_MT"));
-                                userData.setPrLastMonth(user.getInt("QPREV_MT"));
-                                userData.setPrMonthAgo(user.getInt("QLAST_MT"));
-                                list.add(userData);
-                                adapter.setData(list);
-                               // adapter.notifyDataSetChanged();
-                            }
-                        }*/
+                        }
+                        else {
+                        for (int i = 0; i < tablePr.length(); i++) {
+                        JSONObject user = tablePr.getJSONObject(i);
+                        UserData userData = new UserData();
+                        userData.setName(user.getString("BEDNR"));
+                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
+                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
+                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));
+                        list.add(userData);
+                        adapter.notifyDataSetChanged();
+                        }
+                    }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
@@ -176,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_logout:
-                androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert );
+                androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder =
+                        new androidx.appcompat.app.AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert );
                 alertDialogBuilder.setTitle("Information");
                 alertDialogBuilder
                         .setMessage("Apakah anda yakin untuk logout.?")

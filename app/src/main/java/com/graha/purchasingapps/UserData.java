@@ -3,7 +3,7 @@ package com.graha.purchasingapps;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class UserData implements Parcelable {
+public class UserData implements Parcelable{
 
     String name;
     Integer poThisMonth;
