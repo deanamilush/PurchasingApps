@@ -1,8 +1,14 @@
 package com.graha.purchasingapps;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,12 +37,12 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
-    Config pConfig;
-    private ArrayList<UserData> list = new ArrayList<>();
-    RecyclerView recyclerView;
+    private Config pConfig;
+    private final ArrayList<UserData> list = new ArrayList<>();
     private ProgressBar progressBar;
     private static final String TAG = MainActivity.class.getSimpleName();
     private ListAdapter adapter;
+    private final int jobId = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         getMyData();
         pConfig = gson.fromJson(objCon, Config.class);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
 
         recyclerView.setHasFixedSize(true);
@@ -59,6 +65,49 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
         getListPr();
+
+        startJob();
+
+    }
+
+    private void startJob(){
+        if (isJobRunning(this)) {
+            Toast.makeText(this, "Job Service is already scheduled", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ComponentName mServiceComponent = new ComponentName(this, GetCurrentData.class);
+        PersistableBundle bundle = new PersistableBundle();
+        bundle.putString("ashost", pConfig.pAshost);
+        bundle.putString("sysnr", pConfig.pSysnr);
+        bundle.putString("client", pConfig.pClient);
+        bundle.putString("usap", pConfig.pUser_sap);
+        bundle.putString("psap", pConfig.pPass_sap);
+        JobInfo.Builder builder = new JobInfo.Builder(jobId, mServiceComponent);
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        builder.setRequiresDeviceIdle(false);
+        builder.setRequiresCharging(false);
+        // 1000 ms = 1 detik
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            builder.setPeriodic(900000) ;//15 menit
+        } else {
+            builder.setPeriodic(180000) ;//3 menit
+        }
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
+        Toast.makeText(this, "Job Service started", Toast.LENGTH_SHORT).show();
+    }
+    private boolean isJobRunning(Context context) {
+        boolean isScheduled = false;
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (scheduler != null) {
+            for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+                if (jobInfo.getId() == jobId) {
+                    isScheduled = true;
+                    break;
+                }
+            }
+        }
+        return isScheduled;
     }
 
    public void getListPr(){
@@ -68,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         params.put("ashost", pConfig.pAshost);
         params.put("sysnr", pConfig.pSysnr);
-        params.put("client", pConfig.pClient);
+        params.put("client", pConfig.pUser_sap);
         params.put("usap", pConfig.pUser_sap);
         params.put("psap", pConfig.pPass_sap);
         client.post(url, params, new AsyncHttpResponseHandler() {
