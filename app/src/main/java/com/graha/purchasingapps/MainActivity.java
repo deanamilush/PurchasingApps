@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
@@ -37,6 +38,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -49,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private static final String TAG = MainActivity.class.getSimpleName();
     private ListAdapter adapter;
-    private final int jobId = 10;
+    private int jobId = 0;
+    private Timer autoUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,50 +75,34 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ListAdapter(list);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-        getListPr();
+    }
 
-    }
-    /*private void startJob(){
-        if (isJobRunning(this)) {
-            Toast.makeText(this, "Job Service is already scheduled", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        ComponentName mServiceComponent = new ComponentName(this, GetCurrentData.class);
-        PersistableBundle bundle = new PersistableBundle();
-        bundle.putString("ashost", pConfig.pAshost);
-        bundle.putString("sysnr", pConfig.pSysnr);
-        bundle.putString("client", pConfig.pClient);
-        bundle.putString("usap", pConfig.pUser_sap);
-        bundle.putString("psap", pConfig.pPass_sap);
-        JobInfo.Builder builder = new JobInfo.Builder(jobId, mServiceComponent);
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        builder.setRequiresDeviceIdle(false);
-        builder.setRequiresCharging(false);
-        // 1000 ms = 1 detik
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            builder.setPeriodic(900000) ;//15 menit
-        } else {
-            builder.setPeriodic(180000) ;//3 menit
-        }
-        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());
-        Toast.makeText(this, "Job Service started", Toast.LENGTH_SHORT).show();
-    }
-    private boolean isJobRunning(Context context) {
-        boolean isScheduled = false;
-        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        if (scheduler != null) {
-            for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
-                if (jobInfo.getId() == jobId) {
-                    isScheduled = true;
-                    break;
-                }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        autoUpdate = new Timer();
+        autoUpdate.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    jobId++;
+                    Toast.makeText(getApplicationContext(), "Loading For Refresh Data ", Toast.LENGTH_SHORT).show();
+                    getListPr();
+                });
             }
-        }
-        return isScheduled;
-    }*/
+        }, 0, 20000); // updates each 40 secs
+    }
+
+    @Override
+    public void onPause() {
+        autoUpdate.cancel();
+        super.onPause();
+    }
+
 
    public void getListPr(){
+       list.clear();
        progressBar.setVisibility(View.VISIBLE);
        final int DEFAULT_TIMEOUT = 20 * 1000;
         AsyncHttpClient client = new AsyncHttpClient();
@@ -135,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject responseObject = new JSONObject(result);
                     JSONArray jsonArray = responseObject.getJSONArray("return");
+                    JSONArray tPurc = responseObject.getJSONArray("t_purc");
                     JSONArray tablePr = responseObject.getJSONArray("t_pr");
                     JSONArray tablePo = responseObject.getJSONArray("t_po");
                     JSONObject type = jsonArray.getJSONObject(0);
@@ -157,21 +146,42 @@ public class MainActivity extends AppCompatActivity {
                             alertDialog.show();
                         }
                         else {
-                        for (int i = 0; i < tablePr.length(); i++) {
-                        JSONObject user = tablePr.getJSONObject(i);
-                        JSONObject listPo = tablePo.getJSONObject(i);
-                        UserData userData = new UserData();
-                        userData.setName(user.getString("BEDNR"));
-                        userData.setPrThisMonth(user.getInt("QCUR_MT"));
-                        userData.setPrLastMonth(user.getInt("QPREV_MT"));
-                        userData.setPrMonthAgo(user.getInt("QLAST_MT"));
-                        userData.setPoThisMonth(listPo.getInt("QCUR_MT"));
-                        userData.setPoLastMonth(listPo.getInt("QPREV_MT"));
-                        userData.setPoMonthAgo(listPo.getInt("QLAST_MT"));
-                        list.add(userData);
-                        adapter.notifyDataSetChanged();
-                        }
+                            String lBednr;
+                            for (int i = 0; i < tPurc.length(); i++) {
+                                JSONObject user = tPurc.getJSONObject(i);
+                                UserData userData = new UserData();
+                                userData.setName(user.getString("BEDNR"));
+                                lBednr = user.getString("BEDNR");
+                                userData.setPrThisMonth(0);
+                                userData.setPrLastMonth(0);
+                                userData.setPrMonthAgo(0);
+                                userData.setPoThisMonth(0);
+                                userData.setPoLastMonth(0);
+                                userData.setPoMonthAgo(0);
 
+                                for (int k = 0; k < tablePr.length(); k++) {
+                                    JSONObject dtPr = tablePr.getJSONObject(k);
+                                    if (lBednr.equalsIgnoreCase(dtPr.getString("BEDNR"))){
+                                        userData.setPrThisMonth(dtPr.getInt("QCUR_MT"));
+                                        userData.setPrLastMonth(dtPr.getInt("QPREV_MT"));
+                                        userData.setPrMonthAgo(dtPr.getInt("QLAST_MT"));
+                                        break;
+                                    }
+                                }
+
+                                for (int k = 0; k < tablePo.length(); k++) {
+                                    JSONObject dtPo = tablePo.getJSONObject(k);
+                                    if (lBednr.equalsIgnoreCase(dtPo.getString("BEDNR"))){
+                                        userData.setPoThisMonth(dtPo.getInt("QCUR_MT"));
+                                        userData.setPoLastMonth(dtPo.getInt("QPREV_MT"));
+                                        userData.setPoMonthAgo(dtPo.getInt("QLAST_MT"));
+                                        break;
+                                    }
+                                }
+
+                                list.add(userData);
+                                adapter.notifyDataSetChanged();
+                            }
                     }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
