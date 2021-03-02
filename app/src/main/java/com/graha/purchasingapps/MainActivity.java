@@ -13,8 +13,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.gson.Gson;
 import com.graha.purchasingapps.global.Config;
@@ -22,6 +26,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -36,6 +41,8 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Toolbar mToolbar;
 
     private Config pConfig;
     private final ArrayList<UserData> list = new ArrayList<>();
@@ -66,11 +73,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         getListPr();
 
-        startJob();
-
     }
-
-    private void startJob(){
+    /*private void startJob(){
         if (isJobRunning(this)) {
             Toast.makeText(this, "Job Service is already scheduled", Toast.LENGTH_SHORT).show();
             return;
@@ -108,16 +112,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return isScheduled;
-    }
+    }*/
 
    public void getListPr(){
        progressBar.setVisibility(View.VISIBLE);
+       final int DEFAULT_TIMEOUT = 20 * 1000;
         AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(DEFAULT_TIMEOUT);
         String url = "http://192.168.1.8/GlobalInc/valPrPO.php";
         RequestParams params = new RequestParams();
         params.put("ashost", pConfig.pAshost);
         params.put("sysnr", pConfig.pSysnr);
-        params.put("client", pConfig.pUser_sap);
+        params.put("client", pConfig.pClient);
         params.put("usap", pConfig.pUser_sap);
         params.put("psap", pConfig.pPass_sap);
         client.post(url, params, new AsyncHttpResponseHandler() {
@@ -130,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject responseObject = new JSONObject(result);
                     JSONArray jsonArray = responseObject.getJSONArray("return");
                     JSONArray tablePr = responseObject.getJSONArray("t_pr");
+                    JSONArray tablePo = responseObject.getJSONArray("t_po");
                     JSONObject type = jsonArray.getJSONObject(0);
                     String typeReturn = type.getString("type");
                     String messageReturn = type.getString("msg");
@@ -152,14 +159,19 @@ public class MainActivity extends AppCompatActivity {
                         else {
                         for (int i = 0; i < tablePr.length(); i++) {
                         JSONObject user = tablePr.getJSONObject(i);
+                        JSONObject listPo = tablePo.getJSONObject(i);
                         UserData userData = new UserData();
                         userData.setName(user.getString("BEDNR"));
                         userData.setPrThisMonth(user.getInt("QCUR_MT"));
                         userData.setPrLastMonth(user.getInt("QPREV_MT"));
                         userData.setPrMonthAgo(user.getInt("QLAST_MT"));
+                        userData.setPoThisMonth(listPo.getInt("QCUR_MT"));
+                        userData.setPoLastMonth(listPo.getInt("QPREV_MT"));
+                        userData.setPoMonthAgo(listPo.getInt("QLAST_MT"));
                         list.add(userData);
                         adapter.notifyDataSetChanged();
                         }
+
                     }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -189,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
     @Override

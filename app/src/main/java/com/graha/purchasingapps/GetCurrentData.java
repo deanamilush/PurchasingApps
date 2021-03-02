@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class GetCurrentData extends JobService {
+/*public class GetCurrentData extends JobService {
 
     public static final String TAG = GetCurrentData.class.getSimpleName();
     private final ArrayList<UserData> listUpdate = new ArrayList<>();
@@ -127,4 +127,4 @@ public class GetCurrentData extends JobService {
         String jSonCon = gson.toJson(pConfig);
         return  jSonCon;
     }
-}
+}*/

@@ -62,6 +62,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             prThisMonth.setText(String.valueOf(userData.getPrThisMonth()));
             prLastMonth.setText(String.valueOf(userData.getPrLastMonth()));
             prMonthAgo.setText(String.valueOf(userData.getPrMonthAgo()));
+            poThisMonth.setText(String.valueOf(userData.getPoThisMonth()));
+            poLastMonth.setText(String.valueOf(userData.getPoLastMonth()));
+            poMonthAgo.setText(String.valueOf(userData.getPoMonthAgo()));
         }
     }
 }
